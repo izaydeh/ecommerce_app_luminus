@@ -1,12 +1,12 @@
-
 import 'package:ecomm_app/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: SplashScreen()
+    MaterialApp(
+      theme: ThemeData(fontFamily: 'Muli'),
+      debugShowCheckedModeBanner: false,
+      home: const SplashScreen(),
     ),
   );
 }

@@ -55,7 +55,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     hintStyle: TextStyle(
                       color: const Color.fromARGB(255, 115, 114, 114),
                     ),
-                    labelText: "First Name", // this shows text on the border
+                    labelText: "First Name", 
                     labelStyle: TextStyle(
                       color: Color.fromARGB(255, 115, 114, 114),
                     ),
