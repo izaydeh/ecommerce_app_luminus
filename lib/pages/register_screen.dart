@@ -1,3 +1,4 @@
+import 'package:ecomm_app/my%20widgets/text_form_widget.dart';
 import 'package:ecomm_app/pages/complete_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,6 +11,11 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _reEnterPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,122 +53,79 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               SizedBox(height: 50),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Enter your email",
-                    hintStyle: TextStyle(
-                      color: const Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    labelText: "Email", // this shows text on the border
-                    labelStyle: TextStyle(
-                      color: Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    floatingLabelAlignment: FloatingLabelAlignment.start,
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 20,
-                    ),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 25.0),
-                      child: SvgPicture.asset("assets/icons/Mail.svg"),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: MyTextFormField(
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Email Can't be empty";
+                          } else if (!value.contains('@')) {
+                            return "Please Enter Vaild Email";
+                          } else {
+                            return null;
+                          }
+                        },
+                        hintText: "Enter your email",
+                        lableText: "Email",
+                        iconPath: "assets/icons/Mail.svg",
+                      ),
                     ),
 
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 115, 114, 114),
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: MyTextFormField(
+                        controller: _passwordController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password Can't be empty";
+                          } else if (value.length < 8) {
+                            return "Please Enter Vaild Password";
+                          } else {
+                            return null;
+                          }
+                        },
+                        obsecureText: true,
+                        hintText: "Enter your Password",
+                        lableText: "Password",
+                        iconPath: "assets/icons/Lock.svg",
+                        endPadding: 30,
                       ),
-                      borderRadius: BorderRadius.circular(25),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepOrangeAccent),
-                      borderRadius: BorderRadius.circular(25),
+
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: MyTextFormField(
+                        controller: _reEnterPasswordController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password Can't be empty";
+                          } else if (value.length < 8) {
+                            return "Please Enter Vaild Password";
+                          } else if (value != _passwordController.text) {
+                            return "Passwords Not Matched!";
+                          } else {
+                            return null;
+                          }
+                        },
+                        obsecureText: true,
+                        hintText: "Re-enter your password",
+                        lableText: "Confirm Password",
+                        iconPath: "assets/icons/Lock.svg",
+                        endPadding: 30,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
 
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: "Enter your password",
-                    hintStyle: TextStyle(
-                      color: const Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    labelText: "Password", // this shows text on the border
-                    labelStyle: TextStyle(
-                      color: Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    floatingLabelAlignment: FloatingLabelAlignment.start,
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 20,
-                    ),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 30.0),
-                      child: SvgPicture.asset("assets/icons/Lock.svg"),
-                    ),
-
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 115, 114, 114),
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepOrangeAccent),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: "Re-enter your password",
-                    hintStyle: TextStyle(
-                      color: const Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    labelText:
-                        "Confirm Password", // this shows text on the border
-                    labelStyle: TextStyle(
-                      color: Color.fromARGB(255, 115, 114, 114),
-                    ),
-                    floatingLabelAlignment: FloatingLabelAlignment.start,
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 20,
-                    ),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 30.0),
-                      child: SvgPicture.asset("assets/icons/Lock.svg"),
-                    ),
-
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 115, 114, 114),
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepOrangeAccent),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
+              SizedBox(height: 50),
               SizedBox(
                 width: 330,
                 height: 50,
@@ -175,12 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CompleteProfileScreen(),
-                      ),
-                    );
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CompleteProfileScreen(),
+                        ),
+                      );
+                    }
                   },
                   child: Text("Continue", style: TextStyle(fontSize: 17)),
                 ),
