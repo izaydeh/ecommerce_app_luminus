@@ -20,7 +20,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  PageController _controller = PageController();
+  final PageController _controller = PageController();
   bool isLast = false;
 
   @override
@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   if (isLast) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(builder: (v) => LoginScreen()),
                     );
                   } else {
                     _controller.nextPage(

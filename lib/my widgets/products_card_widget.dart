@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class ProductsCard extends StatelessWidget {
-  const ProductsCard({
+class ProductsCard extends StatefulWidget {
+  ProductsCard({
     super.key,
     required this.image,
     required this.nameOfProduct,
@@ -12,6 +12,12 @@ class ProductsCard extends StatelessWidget {
   final String nameOfProduct;
   final String price;
 
+  @override
+  State<ProductsCard> createState() => _ProductsCardState();
+}
+
+class _ProductsCardState extends State<ProductsCard> {
+  bool isFav = false;
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -30,13 +36,13 @@ class ProductsCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: Image.asset(image, width: 100, height: 100),
+                  child: Image.asset(widget.image, width: 100, height: 100),
                 ),
               ),
             ),
             SizedBox(height: 10),
             Text(
-              nameOfProduct,
+              widget.nameOfProduct,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
@@ -48,7 +54,7 @@ class ProductsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  price,
+                  widget.price,
                   style: TextStyle(
                     color: const Color.fromARGB(255, 255, 102, 0),
                     fontSize: 20,
@@ -57,23 +63,34 @@ class ProductsCard extends StatelessWidget {
                 ),
 
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    setState(() {
+                      isFav = !isFav;
+                    });
+                  },
                   child: Container(
                     width: 30,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(
-                        255,
-                        253,
-                        126,
-                        0,
-                      ).withOpacity(0.1),
+                      color: isFav
+                          ? const Color.fromARGB(
+                              255,
+                              253,
+                              126,
+                              0,
+                            ).withOpacity(0.1)
+                          : const Color.fromARGB(
+                              255,
+                              165,
+                              165,
+                              164,
+                            ).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SvgPicture.asset(
-                        color: Colors.red,
+                        color: isFav ? Colors.red : Colors.grey,
                         "assets/icons/Heart Icon_2.svg",
                       ),
                     ),
