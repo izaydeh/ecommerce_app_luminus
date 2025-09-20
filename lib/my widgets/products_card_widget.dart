@@ -1,3 +1,4 @@
+import 'package:ecomm_app/pages/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -7,10 +8,12 @@ class ProductsCard extends StatefulWidget {
     required this.image,
     required this.nameOfProduct,
     required this.price,
+    this.onPressed,
   });
   final String image;
   final String nameOfProduct;
   final String price;
+  final VoidCallback? onPressed;
 
   @override
   State<ProductsCard> createState() => _ProductsCardState();
@@ -25,9 +28,11 @@ class _ProductsCardState extends State<ProductsCard> {
       child: SizedBox(
         width: 140,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              onTap: () {},
+              onTap: widget.onPressed,
+
               child: Container(
                 height: 140,
                 width: 140,
@@ -36,7 +41,11 @@ class _ProductsCardState extends State<ProductsCard> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: Image.asset(widget.image, width: 100, height: 100),
+                  child: SizedBox(
+                    height: 80,
+                    width: 70,
+                    child: Image.network(widget.image),
+                  ),
                 ),
               ),
             ),
@@ -44,6 +53,7 @@ class _ProductsCardState extends State<ProductsCard> {
             Text(
               widget.nameOfProduct,
               style: TextStyle(
+                fontSize: 10,
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
               ),
