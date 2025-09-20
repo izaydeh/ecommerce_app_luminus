@@ -1,7 +1,10 @@
+import 'package:ecomm_app/models/products.dart';
 import 'package:ecomm_app/my widgets/category_card_widget.dart';
 import 'package:ecomm_app/my widgets/menu_item_widegt.dart';
 import 'package:ecomm_app/my widgets/products_card_widget.dart';
+import 'package:ecomm_app/pages/details_screen.dart';
 import 'package:ecomm_app/pages/profile_screen.dart';
+import 'package:ecomm_app/service/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -19,13 +22,6 @@ class _Cat {
   _Cat(this.title, this.brands, this.image);
 }
 
-class _Product {
-  final String nameOfProduct;
-  final String price;
-  final String image;
-  _Product(this.nameOfProduct, this.price, this.image);
-}
-
 class _HomeScreenState extends State<HomeScreen> {
   int _tabIndex = 0;
 
@@ -34,25 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _Cat("Fashion", 24, "assets/images/Image Banner 3.png"),
   ];
 
-  final List<_Product> _products = [
-    _Product(
-      "Wireless Controller for PS4™",
-      "\$64.99",
-      "assets/images/Image Popular Product 1.png",
-    ),
-    _Product(
-      "Nike Sport White - Man Pant",
-      "\$50.5",
-      "assets/images/Image Popular Product 2.png",
-    ),
-    _Product(
-      "Bicycle Helmet - Colorfull Helmet",
-      "\$36.15",
-      "assets/images/Image Popular Product 3.png",
-    ),
-  ];
-
   final TextEditingController _textValue = TextEditingController();
+
+  final Future<List<Products>> _futureProducts = ProductService()
+      .fetchProducts();
 
   @override
   Widget build(BuildContext context) {
@@ -237,16 +218,49 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 230,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 22),
-                      scrollDirection: Axis.horizontal,
-                      separatorBuilder: (_, __) => const SizedBox(width: 15),
-                      itemCount: _products.length,
-                      itemBuilder: (_, i) => ProductsCard(
-                        image: _products[i].image,
-                        nameOfProduct: _products[i].nameOfProduct,
-                        price: _products[i].price,
-                      ),
+                    child: FutureBuilder(
+                      future: _futureProducts,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error: ${snapshot.error}'),
+                          );
+                        } else if (snapshot.hasData) {
+                          final products = snapshot.data!;
+                          return ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 22),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 15),
+                            itemCount: 4,
+                            itemBuilder: (_, i) => ProductsCard(
+                              image: products[i].image,
+                              nameOfProduct: products[i].title,
+                              price: '\$${products[i].price}',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DetailsScreen(
+                                        image: products[i].image,
+                                        title: products[i].title,
+                                        price: '\$${products[i].price}',
+                                        description: products[i].description,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
                     ),
                   ),
                 ],

@@ -1,3 +1,5 @@
+import 'package:ecomm_app/pages/details_screen.dart';
+import 'package:ecomm_app/pages/home_screen.dart';
 import 'package:ecomm_app/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -7,7 +9,7 @@ void main() {
     MaterialApp(
       theme: ThemeData(fontFamily: 'Muli'),
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: const HomeScreen(),
     ),
   );
 }
