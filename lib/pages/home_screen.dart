@@ -286,7 +286,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             activeIcon: SvgPicture.asset(
               "assets/icons/Shop Icon.svg",
-
               colorFilter: const ColorFilter.mode(
                 Colors.deepOrange,
                 BlendMode.srcIn,

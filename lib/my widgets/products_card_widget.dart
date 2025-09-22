@@ -1,9 +1,8 @@
-import 'package:ecomm_app/pages/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ProductsCard extends StatefulWidget {
-  ProductsCard({
+  const ProductsCard({
     super.key,
     required this.image,
     required this.nameOfProduct,
@@ -32,7 +31,6 @@ class _ProductsCardState extends State<ProductsCard> {
           children: [
             InkWell(
               onTap: widget.onPressed,
-
               child: Container(
                 height: 140,
                 width: 140,
