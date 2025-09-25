@@ -7,6 +7,7 @@ import 'package:ecomm_app/pages/profile_screen.dart';
 import 'package:ecomm_app/service/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,8 +33,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final TextEditingController _textValue = TextEditingController();
 
+  // Fetch once, re-use
   final Future<List<Products>> _futureProducts = ProductService()
       .fetchProducts();
+
+  // Favorites stored as Set of product unique keys (here: title)
+  final Set<String> _favorites = <String>{};
+
+  static const String _prefsKey = 'favorite_products';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_prefsKey) ?? <String>[];
+    setState(() {
+      _favorites.clear();
+      _favorites.addAll(saved);
+    });
+  }
+
+  Future<void> _saveFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_prefsKey, _favorites.toList());
+  }
+
+  void _toggleFavorite(Products product) {
+    final key = product.title;
+    setState(() {
+      if (_favorites.contains(key)) {
+        _favorites.remove(key);
+      } else {
+        _favorites.add(key);
+      }
+    });
+    _saveFavorites();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 230,
-                    child: FutureBuilder(
+                    child: FutureBuilder<List<Products>>(
                       future: _futureProducts,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -240,6 +279,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               image: products[i].image,
                               nameOfProduct: products[i].title,
                               price: '\$${products[i].price}',
+                              isFav: _favorites.contains(products[i].title),
+                              onFavToggle: () => _toggleFavorite(products[i]),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -267,7 +308,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          const Center(child: Text('Favorites')),
+
+          FavoritesScreen(
+            futureProducts: _futureProducts,
+            favoritesSet: _favorites,
+            onToggleFavorite: _toggleFavorite,
+          ),
+
           const Center(child: Text('Chat')),
           const ProfileScreen(),
         ],
@@ -328,6 +375,89 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// FavoritesScreen shows only the products that are currently in favorites set.
+class FavoritesScreen extends StatelessWidget {
+  final Future<List<Products>> futureProducts;
+  final Set<String> favoritesSet;
+  final void Function(Products) onToggleFavorite;
+
+  const FavoritesScreen({
+    super.key,
+    required this.futureProducts,
+    required this.favoritesSet,
+    required this.onToggleFavorite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Products>>(
+      future: futureProducts,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final products = snapshot.data!;
+          final favProducts = products
+              .where((p) => favoritesSet.contains(p.title))
+              .toList();
+
+          if (favProducts.isEmpty) {
+            return const Center(child: Text('No favorites yet'));
+          }
+
+          return SafeArea(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: favProducts.length,
+              itemBuilder: (context, index) {
+                final p = favProducts[index];
+                return Row(
+                  children: [
+                    Expanded(
+                      child: ProductsCard(
+                        image: p.image,
+                        nameOfProduct: p.title,
+                        price: '\$${p.price}',
+                        isFav: favoritesSet.contains(p.title),
+                        onFavToggle: () => onToggleFavorite(p),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) {
+                                return DetailsScreen(
+                                  image: p.image,
+                                  title: p.title,
+                                  price: '\$${p.price}',
+                                  description: p.description,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }
