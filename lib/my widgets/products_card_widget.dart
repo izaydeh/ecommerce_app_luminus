@@ -69,7 +69,7 @@ class ProductsCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                GestureDetector(
+                InkWell(
                   onTap: onFavToggle,
                   child: Container(
                     width: 30,

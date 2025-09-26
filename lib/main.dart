@@ -1,4 +1,4 @@
-import 'package:ecomm_app/pages/home_screen.dart';
+import 'package:ecomm_app/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -6,7 +6,7 @@ void main() {
     MaterialApp(
       theme: ThemeData(fontFamily: 'Muli'),
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     ),
   );
 }
