@@ -3,6 +3,7 @@ import 'package:ecomm_app/my widgets/category_card_widget.dart';
 import 'package:ecomm_app/my widgets/menu_item_widegt.dart';
 import 'package:ecomm_app/my widgets/products_card_widget.dart';
 import 'package:ecomm_app/pages/details_screen.dart';
+import 'package:ecomm_app/pages/favorites_screen.dart';
 import 'package:ecomm_app/pages/profile_screen.dart';
 import 'package:ecomm_app/service/product_service.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final TextEditingController _textValue = TextEditingController();
 
-  // Fetch once, re-use
   final Future<List<Products>> _futureProducts = ProductService()
       .fetchProducts();
 
-  // Favorites stored as Set of product unique keys (here: title)
   final Set<String> _favorites = <String>{};
 
   static const String _prefsKey = 'favorite_products';
@@ -291,6 +290,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         title: products[i].title,
                                         price: '\$${products[i].price}',
                                         description: products[i].description,
+                                        isFav: _favorites.contains(
+                                          products[i].title,
+                                        ),
+                                        onToggleFavorite: () =>
+                                            _toggleFavorite(products[i]),
                                       );
                                     },
                                   ),
@@ -375,89 +379,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// FavoritesScreen shows only the products that are currently in favorites set.
-class FavoritesScreen extends StatelessWidget {
-  final Future<List<Products>> futureProducts;
-  final Set<String> favoritesSet;
-  final void Function(Products) onToggleFavorite;
-
-  const FavoritesScreen({
-    super.key,
-    required this.futureProducts,
-    required this.favoritesSet,
-    required this.onToggleFavorite,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Products>>(
-      future: futureProducts,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData) {
-          final products = snapshot.data!;
-          final favProducts = products
-              .where((p) => favoritesSet.contains(p.title))
-              .toList();
-
-          if (favProducts.isEmpty) {
-            return const Center(child: Text('No favorites yet'));
-          }
-
-          return SafeArea(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: favProducts.length,
-              itemBuilder: (context, index) {
-                final p = favProducts[index];
-                return Row(
-                  children: [
-                    Expanded(
-                      child: ProductsCard(
-                        image: p.image,
-                        nameOfProduct: p.title,
-                        price: '\$${p.price}',
-                        isFav: favoritesSet.contains(p.title),
-                        onFavToggle: () => onToggleFavorite(p),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) {
-                                return DetailsScreen(
-                                  image: p.image,
-                                  title: p.title,
-                                  price: '\$${p.price}',
-                                  description: p.description,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
     );
   }
 }
